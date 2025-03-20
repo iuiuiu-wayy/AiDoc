@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "journal manager api"
+authors = ["Wahyu Amanullah <wahyu.amanullah@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+fastapi = "^0.115.5"
+uvicorn = {extras = ["standard"], version = "^0.32.1"}
+pydantic-settings = "^2.6.1"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+sqlalchemy = "^2.0.36"
+authlib = "^1.3.2"
+httpx = "^0.28.0"
+itsdangerous = "^2.2.0"
+python-multipart = "^0.0.20"
+torch = "2.5.1"
+sentence-transformers = "^3.4.1"
+accelerate = "^1.5.2"
+bitsandbytes = "^0.45.3"
+pandas = "^2.2.3"
+fitz = "^0.0.1.dev2"
+pymupdf = "^1.25.4"
+spacy = "^3.8.4"
+qdrant-client = "^1.13.3"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W"]
