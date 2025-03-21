@@ -64,12 +64,3 @@ engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# API example
-
-app = FastAPI()
-
-
-class UserCreate(BaseModel):
-    username: str
-    email: str

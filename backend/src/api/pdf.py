@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 import pydantic
 
 from src import db
-from src.dependency import get_db, require_user
+from src.dependency import get_db, require_user, require_user_or_guest
 from src.encoder import embedding_model, open_pdf
 from src.qdrant import add_points, query_points
 
@@ -12,9 +12,9 @@ ROUTER = APIRouter(prefix="/pdf", tags=["PDF"])
 
 
 @ROUTER.get("/list")
-def list_files(sess=Depends(get_db), user=Depends(require_user)):
+def list_files(sess=Depends(get_db), user=Depends(require_user_or_guest)):
     """List all PDF files."""
-    return user.pdf_files.all()
+    return user.pdf_files.all() if user else []
 
 
 class AskRequest(pydantic.BaseModel):

@@ -33,7 +33,6 @@ const AskInput: React.FC = () => {
       setErr(null);
     }
   }, [error.isError]);
-  console.log("error", error);
   const handleAsk = async (formValue: TFormValues) => {
     const resp = await addAskPdffn({
       query: formValue.query,
@@ -139,11 +138,9 @@ const AskInput: React.FC = () => {
               <List.Item
                 onClick={() => onClick(item)}
                 style={{
-                  cursor: "pointer", // Indicate the item is clickable
-                  backgroundColor: isSelected ? "#e6f7ff" : "white", // Highlight selected item
-                  border: isSelected
-                    ? "1px solid #1890ff"
-                    : "1px solid #f0f0f0", // Add border for selected item
+                  cursor: "pointer",
+                  backgroundColor: isSelected ? "#e6f7ff" : "white",
+                  border: "1px solid #f0f0f0",
                 }}
               >
                 <List.Item.Meta

@@ -6,7 +6,7 @@ from qdrant_client import models, QdrantClient
 from src.encoder import embedding_model
 
 COLLECTION_NAME = "pdfs"
-client = QdrantClient(":memory:")
+client = QdrantClient("http://qdrant:6333")
 collenction_exists = client.collection_exists(collection_name=COLLECTION_NAME)
 if not collenction_exists:
     client.create_collection(
@@ -20,12 +20,12 @@ if not collenction_exists:
 
 def add_points(items: list[dict]):
     """Add points to Qdrant."""
-    client.upload_points(
+    test = client.upload_points(
         collection_name=COLLECTION_NAME,
         points=[
             models.PointStruct(
                 id=item["id"],
-                vector=item["vector"],
+                vector=item["vector"][0],
                 payload={
                     "user_id": item["user_id"],
                     "file_id": item["file_id"],

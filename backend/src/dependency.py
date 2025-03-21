@@ -23,11 +23,15 @@ class UnauthenticatedError(HTTPException):
         super().__init__(status_code=401, detail=description or "Authentication failed")
 
 
-def require_user(request: Request, sess=Depends(get_db)) -> User:
+def require_user_or_guest(request: Request, sess=Depends(get_db)) -> User | None:
     user_id = request.session.get("jwtpayload", {}).get("sub")
     if not user_id:
-        raise UnauthenticatedError
+        return None
     user = sess.get(User, user_id)
+    return user
+
+
+def require_user(user=Depends(require_user_or_guest)) -> User:
     if not user:
         raise UnauthenticatedError
     return user
