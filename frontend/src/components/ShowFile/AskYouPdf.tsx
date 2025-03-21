@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Form, Input, List, Tooltip } from "antd";
+import { Badge, Form, Input, Layout, List, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { TPointsList, useAddAskPdfMutation } from "../../services/api";
 import { useDispatch } from "react-redux";
@@ -58,108 +58,104 @@ const AskInput: React.FC = () => {
 
   return (
     <div>
-      <Form
-        form={form}
-        layout="horizontal"
-        initialValues={{
-          limit: 10,
-          min_token_length: 30,
-        }}
-      >
-        <Form.Item name="query">
-          <TextArea
-            placeholder="Prompt your question here"
-            autoSize
-            rows={4}
-            count={{
-              show: true,
-              max: 500,
-            }}
-            onPressEnter={() => {
-              form.validateFields().then((values) => {
-                handleAsk({
-                  query: values.query,
-                  limit: values.limit,
-                  min_token_length: values.min_token_length,
+      <Layout style={{ padding: "10px" }}>
+        <Form
+          form={form}
+          layout="horizontal"
+          initialValues={{
+            limit: 10,
+            min_token_length: 30,
+          }}
+        >
+          <Form.Item name="query" style={{ marginBottom: 10 }}>
+            <Input
+              addonBefore={<SearchOutlined />}
+              placeholder="Prompt your question here"
+              count={{
+                show: true,
+                max: 500,
+              }}
+              onPressEnter={() => {
+                form.validateFields().then((values) => {
+                  handleAsk({
+                    query: values.query,
+                    limit: values.limit,
+                    min_token_length: values.min_token_length,
+                  });
                 });
-              });
-            }}
-          />
-        </Form.Item>
-        <Tooltip title="Limit the number of responses">
-          <Form.Item
-            name="limit"
-            rules={[{ required: true }]}
-            style={{ margin: 0 }}
-          >
-            <Input addonBefore="Limit" type="number" style={{ width: "20%" }} />
+              }}
+            />
           </Form.Item>
-        </Tooltip>
-
-        <Tooltip title="Minimum token length">
-          <Form.Item
-            name="min_token_length"
-            rules={[{ required: true }]}
-            style={{ margin: 0 }}
-          >
-            <Input addonBefore="Token" type="number" style={{ width: "20%" }} />
-          </Form.Item>
-        </Tooltip>
-
-        <Form.Item>
-          <SearchOutlined
-            onClick={() => {
-              form.validateFields().then((values) => {
-                handleAsk({
-                  query: values.query,
-                  limit: values.limit,
-                  min_token_length: values.min_token_length,
-                });
-              });
+          <Layout
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "left",
+              gap: "10px",
             }}
-          />
-        </Form.Item>
-      </Form>
-      {err && <div>{err}</div>}
-      <List
-        dataSource={askResponses}
-        renderItem={(item) => {
-          const isSelected = selectedItemId === item.id;
-          return (
-            <Badge.Ribbon
-              text={
-                <Tooltip title="Score">
-                  {" "}
-                  {(Math.round(item.score * 100) / 100).toString()}
-                </Tooltip>
-              }
-              color="green"
-            >
-              <List.Item
-                onClick={() => onClick(item)}
-                style={{
-                  cursor: "pointer",
-                  backgroundColor: isSelected ? "#e6f7ff" : "white",
-                  border: "1px solid #f0f0f0",
-                }}
+          >
+            <Tooltip title="Limit the number of responses">
+              <Form.Item
+                name="limit"
+                rules={[{ required: true }]}
+                style={{ margin: 0 }}
               >
-                <List.Item.Meta
-                  title={
-                    item.payload.file_name +
-                    " - Page " +
-                    item.payload.page_number
-                  }
-                  description={
-                    <Tooltip title={item.payload.text}>
-                      {truncateText(item.payload.text, 200)}
-                    </Tooltip>
-                  }
-                />
-              </List.Item>
-            </Badge.Ribbon>
-          );
-        }}
-      />
+                <Input addonBefore="Limit" type="number" />
+              </Form.Item>
+            </Tooltip>
+
+            <Tooltip title="Minimum token length">
+              <Form.Item
+                name="min_token_length"
+                rules={[{ required: true }]}
+                style={{ margin: 0 }}
+              >
+                <Input addonBefore="Token" type="number" />
+              </Form.Item>
+            </Tooltip>
+          </Layout>
+        </Form>
+        {err && <div>{err}</div>}
+        <List
+          dataSource={askResponses}
+          renderItem={(item) => {
+            const isSelected = selectedItemId === item.id;
+            return (
+              <Badge.Ribbon
+                text={
+                  <Tooltip title="Score">
+                    {" "}
+                    {(Math.round(item.score * 100) / 100).toString()}
+                  </Tooltip>
+                }
+                color="green"
+              >
+                <List.Item
+                  onClick={() => onClick(item)}
+                  style={{
+                    cursor: "pointer",
+                    backgroundColor: isSelected ? "#e6f7ff" : "white",
+                    border: "1px solid #f0f0f0",
+                  }}
+                >
+                  <List.Item.Meta
+                    title={
+                      item.payload.file_name +
+                      " - Page " +
+                      item.payload.page_number
+                    }
+                    description={
+                      <Tooltip title={item.payload.text}>
+                        {truncateText(item.payload.text, 200)}
+                      </Tooltip>
+                    }
+                  />
+                </List.Item>
+              </Badge.Ribbon>
+            );
+          }}
+        />
+      </Layout>
     </div>
   );
 };
