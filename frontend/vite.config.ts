@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [react()],
-    base: "/ui",
+  plugins: [react()],
+  base: "/ui",
+  define: {
+    "process.env": process.env,
+  },
 });

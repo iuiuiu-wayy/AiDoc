@@ -2,7 +2,6 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -17,6 +16,7 @@
     "@ant-design/icons": "^5.6.1",
     "@eslint/js": "^9.17.0",
     "@reduxjs/toolkit": "^2.5.1",
+    "@types/node": "^22.13.11",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

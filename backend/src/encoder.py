@@ -1,6 +1,5 @@
 """Token encoder."""
 
-import io
 import re
 from tempfile import SpooledTemporaryFile
 import fitz

@@ -1,16 +1,12 @@
 from sqlalchemy import (
-    Column,
     ForeignKey,
     Index,
-    Integer,
-    LargeBinary,
-    String,
     create_engine,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, mapped_column, Mapped
-from fastapi import FastAPI, Depends, HTTPException
-from pydantic import BaseModel
+
+from src.config import get_settings
 
 Base = declarative_base()
 
@@ -59,8 +55,8 @@ class TextChunk(Base):
 
 
 # Database setup
-DATABASE_URL = "sqlite:///./test.db"  # Replace with your actual database URL
-engine = create_engine(DATABASE_URL)
+config = get_settings()
+engine = create_engine(config.DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

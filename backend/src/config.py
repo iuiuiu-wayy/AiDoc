@@ -11,14 +11,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     REDIRECT_PROTOCOL: Literal["http", "https"] = "http"
     USERS_TOKEN_ISSUER: str
-
-    class Config:
-        env_file = ".env"
-
-    def print_all(self):
-        print(self.AUTH0_CLIENT_ID)
-        print(self.AUTH0_CLIENT_SECRET)
-        print(self.AUTH0_BASE_URL)
+    DATABASE_URL: str
+    QDRANT_URL: str
+    UI_POSTFIX: str = "ui"
+    API_POSTFIX: str = "api"
 
 
 @lru_cache()

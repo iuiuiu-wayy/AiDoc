@@ -15,10 +15,9 @@ from src.db import User
 from src.dependency import get_db, require_user
 
 config = get_settings()
-config.print_all()
 
 token_auth_scheme = HTTPBearer()
-app = FastAPI(root_path="/api")
+app = FastAPI(root_path=f"/{config.API_POSTFIX}")
 app.include_router(ROUTER)
 OAUTH = OAuth()
 
@@ -87,7 +86,7 @@ async def callback(request: Request, sess=Depends(get_db)):
         user = User(user_id=userinfo["sub"], email=userinfo["email"])
         sess.add(user)
         sess.commit()
-    callback_url = f'{config.REDIRECT_PROTOCOL}://{request.headers.get("host")}/ui'
+    callback_url = f'{config.REDIRECT_PROTOCOL}://{request.headers.get("host")}/{config.UI_POSTFIX}'
 
     callback_url = request.query_params.get("redirect_to", callback_url)
 
@@ -101,7 +100,7 @@ async def private(request: Request, optioanl_user=Depends(chcekc_user)):
         return RedirectResponse(url="/profile")
     redirect_to = request.query_params.get("redirect_to")
     callback_qs = "?" + urlencode({"redirect_to": redirect_to}) if redirect_to else ""
-    callback_url = f"{config.REDIRECT_PROTOCOL}://{request.headers.get('host')}/api/callback{callback_qs}"
+    callback_url = f"{config.REDIRECT_PROTOCOL}://{request.headers.get('host')}/{config.API_POSTFIX}/callback{callback_qs}"
 
     return await AUTH0.authorize_redirect(
         request, redirect_uri=callback_url, audience=config.AUTH0_AUDIENCE
@@ -112,7 +111,7 @@ async def private(request: Request, optioanl_user=Depends(chcekc_user)):
 def logout(request: Request):
     """Logout the user and clear the session"""
     request.session.clear()
-    return RedirectResponse(url="/ui")
+    return RedirectResponse(url=f"/{config.UI_POSTFIX}")
 
 
 app.add_middleware(

@@ -3,10 +3,12 @@
 from typing import Optional
 from qdrant_client import models, QdrantClient
 
+from src.config import get_settings
 from src.encoder import embedding_model
 
+config = get_settings()
 COLLECTION_NAME = "pdfs"
-client = QdrantClient("http://qdrant:6333")
+client = QdrantClient(config.QDRANT_URL)
 collenction_exists = client.collection_exists(collection_name=COLLECTION_NAME)
 if not collenction_exists:
     client.create_collection(
@@ -20,7 +22,7 @@ if not collenction_exists:
 
 def add_points(items: list[dict]):
     """Add points to Qdrant."""
-    test = client.upload_points(
+    client.upload_points(
         collection_name=COLLECTION_NAME,
         points=[
             models.PointStruct(

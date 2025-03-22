@@ -4,7 +4,6 @@ import { SearchOutlined } from "@ant-design/icons";
 import { TPointsList, useAddAskPdfMutation } from "../../services/api";
 import { useDispatch } from "react-redux";
 import { setSelectedFile } from "./store";
-import TextArea from "antd/es/input/TextArea";
 
 interface TFormValues {
   query: string;
@@ -55,7 +54,6 @@ const AskInput: React.FC = () => {
       }),
     );
   };
-
   return (
     <div>
       <Layout style={{ padding: "10px" }}>
