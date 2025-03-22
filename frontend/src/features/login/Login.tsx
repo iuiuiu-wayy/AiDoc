@@ -1,61 +1,73 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetProfileQuery } from "../../services/api";
-import { useDispatch, useSelector } from "react-redux";
-import { setIsLoggedIn } from "./authSlice";
-import { RootState } from "../../store";
-import { Button } from "antd";
-import { LoginOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 
 interface LoginProps {
   children: React.ReactNode;
 }
 
 const Login: React.FC<LoginProps> = ({ children }) => {
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  const dispatch = useDispatch();
+  const [showModal, setShowModal] = useState(false);
 
   const handleLogin = () => {
     window.location.replace(
       "http://localhost/api/login?redirect_to=" + encodeURI("/ui"),
     );
   };
-  const { data, isSuccess, isLoading } = useGetProfileQuery();
+  const { isSuccess, isLoading, error } = useGetProfileQuery();
+
+  const handleLogout = () => {
+    window.location.replace("http://localhost/api/logout");
+  };
+
   useEffect(() => {
-    if (isSuccess && data) {
-      dispatch(setIsLoggedIn(true));
-    } else {
-      dispatch(setIsLoggedIn(false));
+    if (!isLoading && !isSuccess) {
+      setShowModal(true);
     }
-  }, [data, isSuccess, dispatch]);
+  }, [isSuccess, isLoading]);
   if (isLoading) return <>Loading.. </>;
-  if (!isLoggedIn)
+  if (error === undefined) return <>{children}</>;
+  const cond = "status" in error ? (error.status === 403 ? 403 : 401) : 0;
+  if (cond === 403) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          flexDirection: "column",
-        }}
-      >
-        <h1>Welcome to the App :)</h1>
-        <Button
-          type="primary"
-          shape="round"
-          icon={<LoginOutlined />}
-          size="large"
-          onClick={handleLogin}
-          style={{
-            marginTop: "20px",
-            backgroundColor: "#A8AF50",
-            borderColor: "#A3A355",
-          }}
+      <>
+        {children}
+        <Modal
+          title="Require access"
+          open={showModal}
+          onOk={handleLogout}
+          onCancel={() => setShowModal(false)}
+          okText="Login as guest"
+          cancelText="Cancel"
         >
-          Login
-        </Button>
-      </div>
+          You currently don't have access to upload your data.
+          <br />
+          please please ask the developer to allow access to you account 😊.
+        </Modal>
+      </>
     );
+  }
+  if (cond === 401) {
+    return (
+      <>
+        {children}
+        <Modal
+          title="Guest access"
+          open={showModal}
+          onOk={handleLogin}
+          onCancel={() => setShowModal(false)}
+          okText="Login"
+          cancelText="Use guest"
+        >
+          You are currently logged in as a guest user and woudn't be able to
+          upload your own data (example data are availabel).
+          <br />
+          please login and request access to the dev if you wish for full acess
+          😊.
+        </Modal>
+      </>
+    );
+  }
   return <>{children}</>;
 };
 

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     QDRANT_URL: str
     UI_POSTFIX: str = "ui"
     API_POSTFIX: str = "api"
+    ADMIN_EMAIL: str
 
 
 @lru_cache()

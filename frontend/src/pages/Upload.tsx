@@ -2,13 +2,16 @@ import { InboxOutlined } from "@ant-design/icons";
 import { Flex } from "antd";
 import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
-import { ShowFile } from "../components/ShowFile/ShowFile";
-import { useAddFileMutation } from "../services/api";
+import { useAddFileMutation, useGetProfileQuery } from "../services/api";
 import { pdfjs } from "../utils/pdfjsUtils";
-import AskInput from "../components/ShowFile/AskYouPdf";
 const { Dragger } = Upload;
 
 export const UploadPage = () => {
+  const { isSuccess, isLoading } = useGetProfileQuery();
+  const [addFilefn] = useAddFileMutation();
+  if (isLoading) return <>Loading.. </>;
+  if (!isSuccess) return;
+
   const beforeUpload: UploadProps["beforeUpload"] = async (file) => {
     if (file.type !== "application/pdf") {
       return Upload.LIST_IGNORE;
@@ -41,8 +44,6 @@ export const UploadPage = () => {
     }
   };
 
-  const [addFilefn] = useAddFileMutation();
-
   const handleUpload: UploadProps["customRequest"] = async (options) => {
     addFilefn({
       file: options.file as File,
@@ -61,7 +62,6 @@ export const UploadPage = () => {
       <Dragger
         beforeUpload={beforeUpload}
         onChange={onChange}
-        // showUploadList={false}
         name="file"
         customRequest={handleUpload}
       >
@@ -73,8 +73,6 @@ export const UploadPage = () => {
         </p>
         <p className="ant-upload-hint">Support for a single or bulk upload.</p>
       </Dragger>
-      <AskInput />
-      <ShowFile />
     </Flex>
   );
 };

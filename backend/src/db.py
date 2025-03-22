@@ -16,7 +16,7 @@ class User(Base):
 
     user_id: Mapped[str] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(nullable=False)
-
+    full_access: Mapped[bool] = mapped_column(nullable=False, default=False)
     pdf_files: Mapped[list["PDFFiles"]] = relationship(
         "PDFFiles", back_populates="user", lazy="dynamic"
     )

@@ -1,9 +1,10 @@
 from typing import Optional
 from urllib.parse import urlencode
-
+import sqlalchemy as sa
+import pydantic
 import requests
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import HTTPBearer
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
@@ -12,7 +13,7 @@ from src.api.pdf import ROUTER
 from src import schema, utils
 from src.config import get_settings
 from src.db import User
-from src.dependency import get_db, require_user
+from src.dependency import get_db, require_user, require_user_with_access
 
 config = get_settings()
 
@@ -60,7 +61,7 @@ def read_root():
 
 
 @app.get("/profile", response_model=schema.User)
-async def profile(user=Depends(require_user)):
+async def profile(user=Depends(require_user_with_access)):
     return user
 
 
@@ -112,6 +113,35 @@ def logout(request: Request):
     """Logout the user and clear the session"""
     request.session.clear()
     return RedirectResponse(url=f"/{config.UI_POSTFIX}")
+
+
+class UpdateUser(pydantic.BaseModel):
+    """Update user schema"""
+
+    email: str | None
+    user_id: str | None
+    full_access: bool
+
+
+@app.post("/access")
+async def access(
+    update: UpdateUser,
+    user=Depends(require_user),
+    sess=Depends(get_db),
+):
+    """Get add access"""
+    if user.email != config.ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="User does not have access")
+    query = sa.select(User)
+    if update.email is not None:
+        query = query.where(User.email == update.email)
+    elif update.user_id is not None:
+        query = query.where(User.user_id == update.user_id)
+    else:
+        raise HTTPException(status_code=400, detail="No user specified")
+    user2 = sess.scalar(query)
+    user2.full_access = update.full_access
+    sess.commit()
 
 
 app.add_middleware(

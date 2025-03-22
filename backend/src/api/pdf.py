@@ -4,7 +4,12 @@ from tempfile import NamedTemporaryFile
 import pydantic
 
 from src import db
-from src.dependency import get_db, require_user, require_user_or_guest
+from src.dependency import (
+    get_db,
+    require_user,
+    require_user_or_guest,
+    require_user_with_access,
+)
 from src.encoder import embedding_model, open_pdf
 from src.qdrant import add_points, query_points
 
@@ -39,7 +44,7 @@ class PointResponse(pydantic.BaseModel):
 
 
 @ROUTER.post("/ask", response_model=list[PointResponse])
-def ask(request: AskRequest, user=Depends(require_user)):
+def ask(request: AskRequest, user=Depends(require_user_or_guest)):
     resp = query_points(
         request.query, user.user_id, request.min_token_length, limit=request.limit
     )
@@ -47,7 +52,9 @@ def ask(request: AskRequest, user=Depends(require_user)):
 
 
 @ROUTER.post("")
-def upload_file(file: UploadFile, sess=Depends(get_db), user=Depends(require_user)):
+def upload_file(
+    file: UploadFile, sess=Depends(get_db), user=Depends(require_user_with_access)
+):
     """Upload a PDF file."""
 
     with NamedTemporaryFile() as temp:
@@ -92,7 +99,9 @@ def upload_file(file: UploadFile, sess=Depends(get_db), user=Depends(require_use
 
 
 @ROUTER.get("/{file_id}/blob")
-def download_file(file_id: int, sess=Depends(get_db), user=Depends(require_user)):
+def download_file(
+    file_id: int, sess=Depends(get_db), user=Depends(require_user_or_guest)
+):
     """Download a PDF file."""
     pdf = sess.get(db.PDFFiles, file_id)
     if not pdf or pdf.user_id != user.user_id:
