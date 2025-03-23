@@ -35,7 +35,7 @@ interface TAskPdfReq {
   limit: number;
   min_token_length: number;
 }
-const baseQuery = fetchBaseQuery({ baseUrl: process.env.API_PATH });
+const baseQuery = fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_PATH });
 
 const baseQueryWithReauth: typeof baseQuery = async (
   args,

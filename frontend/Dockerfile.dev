@@ -12,11 +12,9 @@ COPY src ./src
 
 COPY public ./public
 
-COPY .env .env.production
-
-RUN npm run build
 
 EXPOSE 80
 
 
-ENTRYPOINT ["npm", "run" , "preview", "--", "--port", "80", "--host"]
+ENTRYPOINT ["npm", "run", "dev", "--","--host", "--port", "80"]
+ 
