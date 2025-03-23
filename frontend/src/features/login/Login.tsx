@@ -11,13 +11,15 @@ const Login: React.FC<LoginProps> = ({ children }) => {
 
   const handleLogin = () => {
     window.location.replace(
-      "http://localhost/api/login?redirect_to=" + encodeURI("/ui"),
+      process.env.API_PATH +
+      "/login?redirect_to=" +
+      encodeURI("/" + process.env.UI_POSTFIX),
     );
   };
   const { isSuccess, isLoading, error } = useGetProfileQuery();
 
   const handleLogout = () => {
-    window.location.replace("http://localhost/api/logout");
+    window.location.replace(process.env.API_PATH + "/logout");
   };
 
   useEffect(() => {
