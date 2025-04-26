@@ -5,6 +5,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   base: "/ui",
+  preview: {
+    allowedHosts: ["amanullah.work"],
+  },
   // define: {
   //   "process.env": process.env,
   // },

@@ -28,6 +28,7 @@ dist-ssr
 .env
 qdrant_data
 docker-compose.yml
+docker-compose.yaml
 
 dummy*
 *.parquet
