@@ -1,5 +1,4 @@
 import { InboxOutlined } from "@ant-design/icons";
-import { Flex } from "antd";
 import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
 
