@@ -1,0 +1,9 @@
+.file-list-item {
+  max-width: 50vw;
+}
+
+@media (max-width: 768px) {
+  .file-list-item {
+    max-width: 100vw;
+  }
+}

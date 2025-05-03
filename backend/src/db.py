@@ -32,7 +32,7 @@ class PDFFiles(Base):
 
     user: Mapped[User] = relationship("User", back_populates="pdf_files")
     text_chunks: Mapped[list["TextChunk"]] = relationship(
-        "TextChunk", back_populates="file", lazy="dynamic"
+        "TextChunk", back_populates="file", lazy="dynamic", cascade="all"
     )
 
     __table_args__ = (Index("PDFFiles_user_id_file_name", "user_id", "file_name"),)

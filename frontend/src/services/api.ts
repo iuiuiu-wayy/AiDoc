@@ -70,6 +70,13 @@ export const base = createApi({
       },
       invalidatesTags: ["TFilelist"],
     }),
+    deleteFile: builder.mutation<void, number>({
+      query: (file_id) => ({
+        url: `pdf/${file_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["TFilelist"],
+    }),
     getFilePdf: builder.query<Blob, number>({
       query: (file_id) => ({
         url: `pdf/${file_id}/blob`,
@@ -96,6 +103,7 @@ export const {
   useGetProfileQuery,
   useAddFileMutation,
   useAddAskPdfMutation,
+  useDeleteFileMutation,
   useLogoutQuery,
   useGetFileListQuery,
   useGetFilePdfQuery,

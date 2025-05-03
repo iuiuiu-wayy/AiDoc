@@ -7,6 +7,7 @@ import "react-pdf/dist/esm/Page/TextLayer.css";
 interface PdfViewerProps {
   file_id: number;
   selectedPageNum: number | null;
+  moveFocus: boolean;
 }
 
 interface MoveFocusProps {
@@ -14,6 +15,7 @@ interface MoveFocusProps {
   numPages: number;
 }
 export const PdfViewer: React.FC<PdfViewerProps> = ({
+  moveFocus: moveFocusProp,
   file_id,
   selectedPageNum,
 }) => {
@@ -23,6 +25,8 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const singlePageRef = useRef<HTMLDivElement | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(selectedPageNum || 1);
+
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     if (data) {
@@ -48,8 +52,43 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     }
   };
   useEffect(() => {
-    moveFocus({ pagenum: selectedPageNum || 1, numPages: numPages || 1 });
-  }, [selectedPageNum, numPages]);
+    if (moveFocusProp) {
+      moveFocus({
+        pagenum: selectedPageNum || 1,
+        numPages: numPages || 1,
+      });
+    }
+    // moveFocus({ pagenum: selectedPageNum || 1, numPages: numPages || 1 });
+  }, [selectedPageNum, numPages, moveFocusProp]);
+
+  useEffect(() => {
+    // const handleKeyDown = (event: KeyboardEvent) => {
+    //   if (event.ctrlKey && event.key === "+") {
+    //     event.preventDefault();
+    //     setZoomLevel((prevZoom) => Math.min(prevZoom + 0.1, 3));
+    //   } else if (event.ctrlKey && event.key === "-") {
+    //     event.preventDefault();
+    //     setZoomLevel((prevZoom) => Math.max(prevZoom - 0.1, 0.5));
+    //   }
+    // };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+        setZoomLevel((prevZoom) => {
+          const newZoom = event.deltaY < 0 ? prevZoom + 0.1 : prevZoom - 0.1;
+          return Math.min(Math.max(newZoom, 0.5), 3);
+        });
+      }
+    };
+
+    // window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", handleWheel);
+    return () => {
+      // window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -70,7 +109,6 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     }
   };
 
-  console.log("selectedPageNum", selectedPageNum);
   return (
     <div>
       {pdfUrl && (
@@ -82,6 +120,8 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
               alignItems: "center",
               overflowY: "scroll",
               height: "90vh",
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: "top",
             }}
           >
             {numPages && numPages > 30 && (

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
 from tempfile import NamedTemporaryFile
 
 import pydantic
+import sqlalchemy as sa
 
 from src import db
 from src.dependency import (
@@ -11,7 +12,7 @@ from src.dependency import (
     require_user_with_access,
 )
 from src.encoder import embedding_model, open_pdf
-from src.qdrant import add_points, query_points
+from src.qdrant import add_points, delete_points, query_points
 
 ROUTER = APIRouter(prefix="/pdf", tags=["PDF"])
 
@@ -109,3 +110,19 @@ def download_file(
     resp = Response(pdf.blob, media_type="application/pdf")
     resp.headers["Content-Disposition"] = f"attachment; filename={pdf.file_name}"
     return resp
+
+
+@ROUTER.delete("/{file_id}")
+def delete_file(
+    file_id: int, sess=Depends(get_db), user=Depends(require_user_with_access)
+):
+    """Delete a PDF file."""
+    pdf = sess.get(db.PDFFiles, file_id)
+    if not pdf or pdf.user_id != user.user_id:
+        raise HTTPException(status_code=404, detail="File not found")
+    subq = pdf.text_chunks.cte()
+    chunk_ids = sess.scalars(sa.select(subq.c.chunk_id)).all()
+    sess.delete(pdf)
+    if len(chunk_ids) > 0:
+        delete_points(chunk_ids)
+    return {"message": "File deleted"}

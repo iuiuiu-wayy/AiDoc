@@ -1,0 +1,9 @@
+.upload-and-list {
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .upload-and-list {
+    flex-direction: column;
+  }
+}

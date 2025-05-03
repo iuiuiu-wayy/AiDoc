@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useGetProfileQuery } from "../../services/api";
 import { Modal } from "antd";
+import { handleLogout } from "../../components/Logout";
+import { handleLogin } from "../../components/Login";
 
 interface LoginProps {
   children: React.ReactNode;
@@ -9,18 +11,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const handleLogin = () => {
-    window.location.replace(
-      import.meta.env.VITE_API_PATH +
-        "/login?redirect_to=" +
-        encodeURI("/" + import.meta.env.VITE_UI_POSTFIX),
-    );
-  };
   const { isSuccess, isLoading, error } = useGetProfileQuery();
-
-  const handleLogout = () => {
-    window.location.replace(import.meta.env.VITE_API_PATH + "/logout");
-  };
 
   useEffect(() => {
     if (!isLoading && !isSuccess) {

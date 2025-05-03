@@ -10,6 +10,7 @@ export const ShowFile = () => {
         <PdfViewer
           file_id={selectedFile.file_id}
           selectedPageNum={selectedFile.page_number}
+          moveFocus={selectedFile.move_focus}
         />
       )}
     </div>

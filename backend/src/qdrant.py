@@ -73,3 +73,11 @@ def query_points(
         ),
     )
     return hits
+
+
+def delete_points(ids: list[int]):
+    """Delete points in Qdrant."""
+    client.delete(
+        collection_name=COLLECTION_NAME,
+        points_selector=models.PointIdsList(points=ids),
+    )

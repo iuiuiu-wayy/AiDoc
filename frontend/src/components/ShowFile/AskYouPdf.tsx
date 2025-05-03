@@ -65,31 +65,13 @@ const AskInput: React.FC = () => {
             min_token_length: 30,
           }}
         >
-          <Form.Item name="query" style={{ marginBottom: 10 }}>
-            <Input
-              addonBefore={<SearchOutlined />}
-              placeholder="Prompt your question here"
-              count={{
-                show: true,
-                max: 500,
-              }}
-              onPressEnter={() => {
-                form.validateFields().then((values) => {
-                  handleAsk({
-                    query: values.query,
-                    limit: values.limit,
-                    min_token_length: values.min_token_length,
-                  });
-                });
-              }}
-            />
-          </Form.Item>
           <Layout
             style={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "left",
               gap: "10px",
+              marginBottom: "10px",
             }}
           >
             <Tooltip title="Limit the number of responses">
@@ -112,6 +94,41 @@ const AskInput: React.FC = () => {
               </Form.Item>
             </Tooltip>
           </Layout>
+          <Form.Item name="query" style={{ marginBottom: 10 }}>
+            <Input
+              addonBefore={<SearchOutlined />}
+              placeholder="Prompt your question here"
+              count={{
+                show: true,
+                max: 500,
+              }}
+            // onPressEnter={() => {
+            //   form.validateFields().then((values) => {
+            //     handleAsk({
+            //       query: values.query,
+            //       limit: values.limit,
+            //       min_token_length: values.min_token_length,
+            //     });
+            //   });
+            // }}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Input
+              type="submit"
+              value="Ask"
+              style={{ width: "100px" }}
+              onClick={() => {
+                form.validateFields().then((values) => {
+                  handleAsk({
+                    query: values.query,
+                    limit: values.limit,
+                    min_token_length: values.min_token_length,
+                  });
+                });
+              }}
+            />
+          </Form.Item>
         </Form>
         {err && <div>{err}</div>}
         <List
@@ -144,7 +161,7 @@ const AskInput: React.FC = () => {
                     }
                     description={
                       <Tooltip title={item.payload.text}>
-                        {truncateText(item.payload.text, 200)}
+                        {truncateText(item.payload.text, 500)}
                       </Tooltip>
                     }
                   />

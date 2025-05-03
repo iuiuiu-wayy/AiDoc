@@ -2,6 +2,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import { Flex } from "antd";
 import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
+
 import { useAddFileMutation, useGetProfileQuery } from "../services/api";
 import { pdfjs } from "../utils/pdfjsUtils";
 const { Dragger } = Upload;
@@ -34,9 +35,6 @@ export const UploadPage = () => {
   };
   const onChange: UploadProps["onChange"] = (info) => {
     const { status } = info.file;
-    if (status !== "uploading") {
-      console.log(info.file);
-    }
     if (status === "done") {
       message.success(`${info.file.name} file uploaded successfully.`);
     } else if (status === "error") {
@@ -58,7 +56,7 @@ export const UploadPage = () => {
   };
 
   return (
-    <Flex vertical={true} gap="middle">
+    <div style={{ width: "100%" }}>
       <Dragger
         beforeUpload={beforeUpload}
         onChange={onChange}
@@ -73,6 +71,6 @@ export const UploadPage = () => {
         </p>
         <p className="ant-upload-hint">Support for a single or bulk upload.</p>
       </Dragger>
-    </Flex>
+    </div>
   );
 };
