@@ -51,6 +51,7 @@ const AskInput: React.FC = () => {
       setSelectedFile({
         file_id: item.payload.file_id,
         page_number: item.payload.page_number,
+        move_focus: true,
       }),
     );
   };
